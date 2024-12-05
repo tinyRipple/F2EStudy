@@ -21,13 +21,18 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "build:dev": "tsup --watch",
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "release": "bumpp",
     "release:publish": "pnpm release && pnpm publish"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
   },
   "devDependencies": {
     "@dhzh/eslint-config": "^0.15.1",
