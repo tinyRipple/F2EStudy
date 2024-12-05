@@ -1,15 +1,33 @@
 {
   "name": "htttp-server",
+  "type": "module",
   "version": "0.0.0",
+  "description": "A TypeScript implement of http-server",
   "author": {
     "name": "tinywaves",
     "email": "dhzhme@gmail.com"
   },
+  "license": "MIT",
+  "homepage": "https://github.com/tinywaves/htttp-server",
+  "keywords": [
+    "typescript",
+    "http-server"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "build:dev": "tsup --watch",
     "dev": "tsx watch --clear-screen=false src/index.ts",
-    "release": "bumpp"
+    "release": "bumpp",
+    "release:publish": "pnpm release && pnpm publish"
   },
   "devDependencies": {
     "@dhzh/eslint-config": "^0.15.1",
