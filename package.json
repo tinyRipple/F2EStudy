@@ -1,0 +1,23 @@
+{
+  "name": "htttp-server",
+  "version": "0.0.0",
+  "author": {
+    "name": "tinywaves",
+    "email": "dhzhme@gmail.com"
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:dev": "tsup --watch",
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "release": "bumpp"
+  },
+  "devDependencies": {
+    "@dhzh/eslint-config": "^0.15.1",
+    "@types/node": "^22.10.1",
+    "bumpp": "^9.8.1",
+    "eslint": "^9.16.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
