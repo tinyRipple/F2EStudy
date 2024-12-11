@@ -37,10 +37,12 @@
   },
   "dependencies": {
     "chalk": "^5.3.0",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "ejs": "^3.1.10"
   },
   "devDependencies": {
     "@dhzh/eslint-config": "^0.15.1",
+    "@types/ejs": "^3.1.5",
     "@types/node": "^22.10.1",
     "bumpp": "^9.8.1",
     "eslint": "^9.16.0",

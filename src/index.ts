@@ -1,14 +1,17 @@
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
+import * as ejs from 'ejs';
 import { DEFAULT_PORT, DEFAULT_BASE_DIR } from './constants';
 import type { ServerOptions } from './types';
 
 export default class Server {
   port: number = DEFAULT_PORT;
   baseDir: string = DEFAULT_BASE_DIR;
+  tmpl: string = '';
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -17,6 +20,8 @@ export default class Server {
     if (options?.baseDir) {
       this.baseDir = options.baseDir;
     }
+    const tmpl = readFileSync(path.resolve(import.meta.dirname, './tmpl/index.ejs'));
+    this.tmpl = tmpl.toString();
   }
 
   start() {
@@ -26,7 +31,9 @@ export default class Server {
         const stat = await fs.stat(wholePath);
         if (stat.isDirectory()) {
           const content = await fs.readdir(wholePath);
-          res.end(content.join('\n'));
+          const html = ejs.render(this.tmpl, { directories: content });
+          res.setHeader('Content-Type', 'text/html;charset=utf-8');
+          res.end(html);
         } else {
           res.end('Not a directory');
         }
