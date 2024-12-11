@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
 import { DEFAULT_PORT, DEFAULT_BASE_DIR } from './constants';
-import type { ServerOptions } from './types';
+import type { ServerOptions, Res } from './types';
 
 export default class Server {
   port: number = DEFAULT_PORT;
@@ -30,12 +30,9 @@ export default class Server {
         const wholePath = path.join(this.baseDir, req.url ?? '/');
         const stat = await fs.stat(wholePath);
         if (stat.isDirectory()) {
-          const content = await fs.readdir(wholePath);
-          const html = ejs.render(this.tmpl, { directories: content });
-          res.setHeader('Content-Type', 'text/html;charset=utf-8');
-          res.end(html);
+          this.processDirectory(wholePath, res);
         } else {
-          res.end('Not a directory');
+          this.processFile(wholePath, res);
         }
       } catch {
         res.end('Not found');
@@ -55,5 +52,17 @@ export default class Server {
       .flat()
       .filter((item) => item?.family === 'IPv4')
       .map((item) => `http://${item.address}:${chalk.cyan(this.port)}`);
+  }
+
+  private async processDirectory(dir: string, res: Res) {
+    const content = await fs.readdir(dir);
+    const html = ejs.render(this.tmpl, { directories: content });
+    res.setHeader('Content-Type', 'text/html;charset=utf-8');
+    res.end(html);
+  }
+
+  private async processFile(file: string, res: Res) {
+    const content = await fs.readFile(file);
+    res.end(content);
   }
 }
