@@ -7,8 +7,8 @@
 </head>
 <body>
   <ul>
-    <% directories.forEach((directory) => { %>
-      <li><a href="<%= directory %>"><%= directory %></a></li>
+    <% directories.forEach(({ contentName, href, size }) => { %>
+      <li><a href="<%= href %>"><%= contentName %></a>(size: <%= size %>byte)</li>
     <% }) %>
   </ul>
 </body>

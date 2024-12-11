@@ -1,7 +1,7 @@
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
-import { createReadStream, readFileSync } from 'node:fs';
+import { createReadStream, readFileSync, statSync } from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
@@ -28,10 +28,11 @@ export default class Server {
   start() {
     const server = http.createServer(async (req, res) => {
       try {
-        const wholePath = path.join(this.baseDir, req.url ?? '/');
+        const requestUrl = decodeURIComponent(req.url ?? '/');
+        const wholePath = path.join(this.baseDir, requestUrl);
         const stat = await fs.stat(wholePath);
         if (stat.isDirectory()) {
-          this.processDirectory(wholePath, res);
+          this.processDirectory(wholePath, res, requestUrl);
         } else {
           this.processFile(wholePath, res);
         }
@@ -56,8 +57,12 @@ export default class Server {
       .map((item) => `http://${item.address}:${chalk.cyan(this.port)}`);
   }
 
-  private async processDirectory(dir: string, res: Res) {
-    const content = await fs.readdir(dir);
+  private async processDirectory(dir: string, res: Res, requestUrl: string) {
+    const content = (await fs.readdir(dir)).map((contentName) => ({
+      contentName,
+      href: path.join(requestUrl, contentName),
+      size: statSync(path.join(dir, contentName)).size,
+    }));
     const html = ejs.render(this.tmpl, { directories: content });
     res.setHeader('Content-Type', 'text/html;charset=utf-8');
     res.end(html);
