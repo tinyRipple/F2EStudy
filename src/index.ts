@@ -1,14 +1,14 @@
-import process from 'node:process';
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import chalk from 'chalk';
+import { DEFAULT_PORT, DEFAULT_BASE_DIR } from './constants';
 import type { ServerOptions } from './types';
 
 export default class Server {
-  port: number = 8080;
-  baseDir: string = process.cwd();
+  port: number = DEFAULT_PORT;
+  baseDir: string = DEFAULT_BASE_DIR;
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -35,7 +35,7 @@ export default class Server {
       }
     });
     server.listen(this.port, () => {
-      console.log(chalk.yellow('Server is running on:'));
+      console.log(chalk.yellow('Server is running on:'), ` ${this.baseDir}`);
       this
         .getOsHosts()
         .forEach((host) => console.log(`\x20\x20${host}`));
