@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import chalk from 'chalk';
 import type { ServerOptions } from './types';
 
-class Server {
+export default class Server {
   port: number = 8080;
   baseDir: string = process.cwd();
 
@@ -50,6 +50,3 @@ class Server {
       .map((item) => `http://${item.address}:${chalk.cyan(this.port)}`);
   }
 }
-
-const server = new Server();
-server.start();
