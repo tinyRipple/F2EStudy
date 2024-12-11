@@ -1,10 +1,11 @@
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
-import { readFileSync } from 'node:fs';
+import { createReadStream, readFileSync } from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
+import mine from 'mime';
 import { DEFAULT_PORT, DEFAULT_BASE_DIR } from './constants';
 import type { ServerOptions, Res } from './types';
 
@@ -35,6 +36,7 @@ export default class Server {
           this.processFile(wholePath, res);
         }
       } catch {
+        res.statusCode = 404;
         res.end('Not found');
       }
     });
@@ -62,7 +64,7 @@ export default class Server {
   }
 
   private async processFile(file: string, res: Res) {
-    const content = await fs.readFile(file);
-    res.end(content);
+    res.setHeader('Content-Type', `${mine.getType(file) ?? 'text/plain'};charset=utf-8`);
+    createReadStream(file).pipe(res);
   }
 }

@@ -38,7 +38,8 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
-    "ejs": "^3.1.10"
+    "ejs": "^3.1.10",
+    "mime": "^4.0.4"
   },
   "devDependencies": {
     "@dhzh/eslint-config": "^0.15.1",
