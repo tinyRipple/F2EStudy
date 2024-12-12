@@ -1,18 +1,17 @@
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
-import { createReadStream, readFileSync, statSync } from 'node:fs';
+import { createReadStream, statSync } from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
 import mine from 'mime';
-import { DEFAULT_PORT, DEFAULT_BASE_DIR } from './constants';
+import { DEFAULT_PORT, DEFAULT_BASE_DIR, TMPL } from './constants';
 import type { ServerOptions, Res } from './types';
 
 export default class Server {
   port: number = DEFAULT_PORT;
   baseDir: string = DEFAULT_BASE_DIR;
-  tmpl: string = '';
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -21,8 +20,6 @@ export default class Server {
     if (options?.baseDir) {
       this.baseDir = options.baseDir;
     }
-    const tmpl = readFileSync(path.resolve(import.meta.dirname, './tmpl/index.ejs'));
-    this.tmpl = tmpl.toString();
   }
 
   start() {
@@ -63,7 +60,7 @@ export default class Server {
       href: path.join(requestUrl, contentName),
       size: statSync(path.join(dir, contentName)).size,
     }));
-    const html = ejs.render(this.tmpl, { directories: content });
+    const html = ejs.render(TMPL, { directories: content });
     res.setHeader('Content-Type', 'text/html;charset=utf-8');
     res.end(html);
   }
