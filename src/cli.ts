@@ -16,6 +16,12 @@ const cliOptions = [
     defaultValue: DEFAULT_BASE_DIR,
     usage: `htttp-server -d ${DEFAULT_BASE_DIR}`,
   },
+  {
+    option: '--data <data>',
+    description: 'The specific data position path',
+    defaultValue: '(use inner data)',
+    usage: `htttp-server --data ./data/data.json`,
+  },
 ];
 
 cliOptions.forEach(({ option, description, defaultValue }) => program.option(option, description, defaultValue.toString()));
@@ -31,5 +37,6 @@ const opts = program.opts();
 const server = new Server({
   port: opts.port,
   baseDir: opts.directory,
+  dataPosition: opts.data,
 });
 server.start();
