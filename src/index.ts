@@ -7,6 +7,7 @@ import { Buffer } from 'node:buffer';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
 import mine from 'mime';
+import { v4 } from 'uuid';
 import { DEFAULT_PORT, DEFAULT_BASE_DIR, TMPL, API_PREFIX, DEFAULT_DATA } from './constants';
 import type { ServerOptions, Res, Req, ResourceItem } from './types';
 
@@ -110,7 +111,7 @@ export default class Server {
       switch (method) {
         case 'GET': {
           if (resourceId) {
-            const item = resourceData.find((item) => item.id === Number(resourceId));
+            const item = resourceData.find((item) => item.id === resourceId);
             if (!item) {
               res.statusCode = 404;
               res.end(JSON.stringify({ error: 'Item not found' }));
@@ -127,7 +128,10 @@ export default class Server {
           req.on('data', (chunk: Buffer) => chunks.push(chunk));
           req.on('end', () => {
             const body = Buffer.concat(chunks).toString();
-            const newItem = JSON.parse(body);
+            const newItem = {
+              ...JSON.parse(body),
+              id: v4(),
+            };
             resourceData.push(newItem);
             res.statusCode = 201;
             res.end(JSON.stringify(newItem));
@@ -145,7 +149,7 @@ export default class Server {
           req.on('end', () => {
             const body = Buffer.concat(chunks).toString();
             const updateData = JSON.parse(body);
-            const index = resourceData.findIndex((item) => item.id === Number(resourceId));
+            const index = resourceData.findIndex((item) => item.id === resourceId);
             if (index === -1) {
               res.statusCode = 404;
               res.end(JSON.stringify({ error: 'Item not found' }));
@@ -162,7 +166,7 @@ export default class Server {
             res.end(JSON.stringify({ error: 'Resource ID is required' }));
             return;
           }
-          const index = resourceData.findIndex((item) => item.id === Number(resourceId));
+          const index = resourceData.findIndex((item) => item.id === resourceId);
           if (index === -1) {
             res.statusCode = 404;
             res.end(JSON.stringify({ error: 'Item not found' }));

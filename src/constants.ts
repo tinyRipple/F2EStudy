@@ -1,4 +1,5 @@
 import process from 'node:process';
+import { v4 } from 'uuid';
 import type { ResourceItem } from './types';
 
 export const DEFAULT_PORT = 8080;
@@ -27,12 +28,12 @@ export const API_PREFIX = '/api';
 export const DEFAULT_DATA: { [k: string]: ResourceItem[] } = {
   users: [
     {
-      id: 1,
+      id: v4(),
       name: 'tinywaves',
       age: 10,
     },
     {
-      id: 2,
+      id: v4(),
       name: 'Lyle Zheng',
       age: 20,
     },

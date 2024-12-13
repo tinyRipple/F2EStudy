@@ -13,6 +13,6 @@ export type Res = http.ServerResponse<http.IncomingMessage> & {
 export type Req = http.IncomingMessage;
 
 export interface ResourceItem {
-  id: number;
+  id: string;
   [key: string]: any;
 }
