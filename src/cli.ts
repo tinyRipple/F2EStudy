@@ -19,7 +19,7 @@ const cliOptions = [
   {
     option: '--data <data>',
     description: 'The specific data position path',
-    defaultValue: '(use inner data)',
+    defaultValue: '',
     usage: `htttp-server --data ./data/data.json`,
   },
 ];
