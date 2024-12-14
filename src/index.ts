@@ -36,6 +36,7 @@ export default class Server {
 
   start() {
     const server = http.createServer(async (req, res) => {
+      this.processCors(req, res);
       try {
         const requestUrl = decodeURIComponent(req.url ?? '/');
         if (requestUrl.startsWith(API_PREFIX)) {
@@ -184,6 +185,21 @@ export default class Server {
     } catch {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: 'Internal server error' }));
+    }
+  }
+
+  private processCors(req: Req, res: Res) {
+    // Browser will set `Origin` header when it is a cross-origin request.
+    if (req.headers.origin) {
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+      // When request has a custom header or a complex request, browser will send an OPTIONS request first. (complex request: put, delete, simple request: get, post)
+      if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Access-Control-Max-Age', '86400');
+        res.statusCode = 200;
+        return res.end();
+      }
     }
   }
 }
