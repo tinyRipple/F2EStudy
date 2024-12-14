@@ -15,6 +15,7 @@ export default class Server {
   port: number = DEFAULT_PORT;
   baseDir: string = DEFAULT_BASE_DIR;
   data: { [k: string]: ResourceItem[] } = {};
+  cors: boolean = false;
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -32,11 +33,16 @@ export default class Server {
     } else {
       this.data = DEFAULT_DATA;
     }
+    if (options?.cors) {
+      this.cors = true;
+    }
   }
 
   start() {
     const server = http.createServer(async (req, res) => {
-      this.processCors(req, res);
+      if (this.cors) {
+        this.processCors(req, res);
+      }
       try {
         const requestUrl = decodeURIComponent(req.url ?? '/');
         if (requestUrl.startsWith(API_PREFIX)) {

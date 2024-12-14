@@ -22,6 +22,12 @@ const cliOptions = [
     defaultValue: '',
     usage: `htttp-server --data ./data/data.json`,
   },
+  {
+    option: '--cors',
+    description: 'Enable cors',
+    defaultValue: false,
+    usage: `htttp-server --cors`,
+  },
 ];
 
 cliOptions.forEach(({ option, description, defaultValue }) => program.option(option, description, defaultValue.toString()));
@@ -35,8 +41,9 @@ program.parse(process.argv);
 const opts = program.opts();
 
 const server = new Server({
-  port: opts.port,
+  port: Number(opts.port),
   baseDir: opts.directory,
   dataPosition: opts.data,
+  cors: JSON.parse(opts.cors),
 });
 server.start();

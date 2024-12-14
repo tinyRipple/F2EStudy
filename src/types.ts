@@ -4,6 +4,7 @@ export interface ServerOptions {
   port?: number;
   baseDir?: string;
   dataPosition?: string;
+  cors?: boolean;
 }
 
 export type Res = http.ServerResponse<http.IncomingMessage> & {
