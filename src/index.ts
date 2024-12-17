@@ -224,12 +224,22 @@ export default class Server {
     // res.setHeader('Cache-Control', 'no-store');
     // no-cache: The browser will send a request to the server to check if the cache is expired, but the browser has cached the response.
     // no-store: The browser will send a request to the server to check if the cache is expired, and the browser has not cached the response.
+    // const stat = await fs.stat(file);
+    // res.setHeader('Last-Modified', stat.mtime.toUTCString());
+    // res.setHeader('Cache-Control', 'max-age=3600');
+    // const ifModifiedSince = res.req?.headers['if-modified-since'];
+    // if (ifModifiedSince && ifModifiedSince === stat.mtime.toUTCString()) {
+    //   res.statusCode = 304;
+    //   return res.end();
+    // }
 
+    // Use etag can solve the problem of: if a file is modified in the same second, the Last-Modified will be the same.
     const stat = await fs.stat(file);
-    res.setHeader('Last-Modified', stat.mtime.toUTCString());
-    res.setHeader('Cache-Control', 'max-age=3600');
-    const ifModifiedSince = res.req?.headers['if-modified-since'];
-    if (ifModifiedSince && ifModifiedSince === stat.mtime.toUTCString()) {
+    const etag = `${stat.mtime.getTime ()}-${stat.size}`;
+    res.setHeader('Etag', etag);
+    res.setHeader('Cache-Control', 'max-age=10');
+    const ifNoneMatch = res.req?.headers['if-none-match'];
+    if (ifNoneMatch && ifNoneMatch === etag) {
       res.statusCode = 304;
       return res.end();
     }
