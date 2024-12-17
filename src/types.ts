@@ -7,6 +7,7 @@ export interface ServerOptions {
   cors?: boolean;
   cache?: boolean;
   compress?: boolean;
+  maxAge?: number;
 }
 
 export type Res = http.ServerResponse<http.IncomingMessage> & {

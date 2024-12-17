@@ -29,10 +29,16 @@ const cliOptions = [
     usage: `htttp-server --cors`,
   },
   {
-    option: '-dc, --disable-cache',
+    option: '--disable-cache',
     description: 'Disable cache',
     defaultValue: false,
-    usage: `htttp-server -dc`,
+    usage: `htttp-server --disable-cache`,
+  },
+  {
+    option: '--max-age <maxAge>',
+    description: 'Set cache max-age',
+    defaultValue: 5,
+    usage: `htttp-server --max-age 5`,
   },
   {
     option: '--compress',
@@ -58,6 +64,7 @@ const server = new Server({
   dataPosition: opts.data,
   cors: JSON.parse(opts.cors),
   cache: !JSON.parse(opts.disableCache),
+  maxAge: Number(opts.maxAge),
   compress: JSON.parse(opts.compress),
 });
 server.start();

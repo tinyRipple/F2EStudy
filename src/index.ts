@@ -20,6 +20,7 @@ export default class Server {
   cors: boolean = false;
   cache: boolean = true;
   compress: boolean = false;
+  maxAge: number = 5;
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -45,6 +46,9 @@ export default class Server {
     }
     if (options?.compress) {
       this.compress = true;
+    }
+    if (options?.maxAge) {
+      this.maxAge = options.maxAge;
     }
   }
 
@@ -252,7 +256,7 @@ export default class Server {
     const stat = await fs.stat(file);
     const etag = `${stat.mtime.getTime ()}-${stat.size}`;
     res.setHeader('Etag', etag);
-    res.setHeader('Cache-Control', 'max-age=10');
+    res.setHeader('Cache-Control', `max-age=${this.maxAge}`);
     const ifNoneMatch = res.req?.headers['if-none-match'];
     if (ifNoneMatch && ifNoneMatch === etag) {
       res.statusCode = 304;
