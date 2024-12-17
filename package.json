@@ -32,7 +32,7 @@
     "build:dev": "tsup --watch",
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "dev:cli": "tsx watch --clear-screen=false src/cli.ts",
-    "release": "bumpp",
+    "release": "pnpm build && bumpp",
     "release:publish": "pnpm release && pnpm publish"
   },
   "dependencies": {
