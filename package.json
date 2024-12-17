@@ -1,5 +1,5 @@
 {
-  "name": "htttp-server",
+  "name": "@dhzh/http-server",
   "type": "module",
   "version": "1.0.0",
   "description": "A TypeScript implement of http-server",
@@ -33,7 +33,7 @@
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "dev:cli": "tsx watch --clear-screen=false src/cli.ts",
     "release": "pnpm build && bumpp",
-    "release:publish": "pnpm release && pnpm publish"
+    "release:publish": "pnpm release && pnpm publish --access=public"
   },
   "dependencies": {
     "chalk": "^5.3.0",
