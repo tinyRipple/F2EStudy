@@ -34,6 +34,12 @@ const cliOptions = [
     defaultValue: false,
     usage: `htttp-server -dc`,
   },
+  {
+    option: '--compress',
+    description: 'Enable compress',
+    defaultValue: false,
+    usage: `htttp-server --compress`,
+  },
 ];
 
 cliOptions.forEach(({ option, description, defaultValue }) => program.option(option, description, defaultValue.toString()));
@@ -52,5 +58,6 @@ const server = new Server({
   dataPosition: opts.data,
   cors: JSON.parse(opts.cors),
   cache: !JSON.parse(opts.disableCache),
+  compress: JSON.parse(opts.compress),
 });
 server.start();

@@ -6,6 +6,7 @@ export interface ServerOptions {
   dataPosition?: string;
   cors?: boolean;
   cache?: boolean;
+  compress?: boolean;
 }
 
 export type Res = http.ServerResponse<http.IncomingMessage> & {

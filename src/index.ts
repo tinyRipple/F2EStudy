@@ -4,6 +4,8 @@ import * as fs from 'node:fs/promises';
 import { createReadStream, readFileSync, statSync } from 'node:fs';
 import * as path from 'node:path';
 import { Buffer } from 'node:buffer';
+import { createBrotliCompress, createDeflate, createGzip } from 'node:zlib';
+import type { Gzip } from 'node:zlib';
 import chalk from 'chalk';
 import * as ejs from 'ejs';
 import mine from 'mime';
@@ -17,6 +19,7 @@ export default class Server {
   data: { [k: string]: ResourceItem[] } = {};
   cors: boolean = false;
   cache: boolean = true;
+  compress: boolean = false;
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -40,6 +43,9 @@ export default class Server {
     if (!options?.cache) {
       this.cache = false;
     }
+    if (options?.compress) {
+      this.compress = true;
+    }
   }
 
   start() {
@@ -57,7 +63,7 @@ export default class Server {
           if (stat.isDirectory()) {
             this.processDirectory(wholePath, res, requestUrl);
           } else {
-            this.processFile(wholePath, res);
+            this.processFile(wholePath, res, req);
           }
         }
       } catch {
@@ -92,11 +98,20 @@ export default class Server {
     res.end(html);
   }
 
-  private async processFile(file: string, res: Res) {
+  private async processFile(file: string, res: Res, req: Req) {
     if (this.cache) {
       this.processCache(res, file); // The homepage will not be cached.
     }
     res.setHeader('Content-Type', `${mine.getType(file) ?? 'text/plain'};charset=utf-8`);
+    if (this.compress) {
+      const compressedStreamResponse = this.processCompress(req);
+      if (compressedStreamResponse) {
+        const [compressedStream, encoding] = compressedStreamResponse;
+        res.setHeader('Content-Encoding', encoding);
+        createReadStream(file).pipe(compressedStream).pipe(res);
+        return;
+      }
+    }
     createReadStream(file).pipe(res);
   }
 
@@ -242,6 +257,17 @@ export default class Server {
     if (ifNoneMatch && ifNoneMatch === etag) {
       res.statusCode = 304;
       return res.end();
+    }
+  }
+
+  private processCompress(req: Req): [Gzip, string] | undefined {
+    const acceptEncoding = req.headers['accept-encoding'];
+    if (acceptEncoding?.includes('gzip')) {
+      return [createGzip(), 'gzip'];
+    } else if (acceptEncoding?.includes('deflate')) {
+      return [createDeflate(), 'deflate'];
+    } else if (acceptEncoding?.includes('br')) {
+      return [createBrotliCompress(), 'br'];
     }
   }
 }
