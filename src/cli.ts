@@ -28,6 +28,12 @@ const cliOptions = [
     defaultValue: false,
     usage: `htttp-server --cors`,
   },
+  {
+    option: '-dc, --disable-cache',
+    description: 'Disable cache',
+    defaultValue: false,
+    usage: `htttp-server -dc`,
+  },
 ];
 
 cliOptions.forEach(({ option, description, defaultValue }) => program.option(option, description, defaultValue.toString()));
@@ -45,5 +51,6 @@ const server = new Server({
   baseDir: opts.directory,
   dataPosition: opts.data,
   cors: JSON.parse(opts.cors),
+  cache: !JSON.parse(opts.disableCache),
 });
 server.start();

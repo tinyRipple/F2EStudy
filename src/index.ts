@@ -16,6 +16,7 @@ export default class Server {
   baseDir: string = DEFAULT_BASE_DIR;
   data: { [k: string]: ResourceItem[] } = {};
   cors: boolean = false;
+  cache: boolean = true;
 
   constructor(options?: ServerOptions) {
     if (options?.port) {
@@ -35,6 +36,9 @@ export default class Server {
     }
     if (options?.cors) {
       this.cors = true;
+    }
+    if (!options?.cache) {
+      this.cache = false;
     }
   }
 
@@ -89,6 +93,9 @@ export default class Server {
   }
 
   private async processFile(file: string, res: Res) {
+    if (this.cache) {
+      this.processCache(res, file); // The homepage will not be cached.
+    }
     res.setHeader('Content-Type', `${mine.getType(file) ?? 'text/plain'};charset=utf-8`);
     createReadStream(file).pipe(res);
   }
@@ -206,6 +213,25 @@ export default class Server {
         res.statusCode = 200;
         return res.end();
       }
+    }
+  }
+
+  private async processCache(res: Res, file: string) {
+    // This method is not recommended for production use. Because this time is server time, not client time, but browsers use client time to adjust if the cache is expired.
+    // res.setHeader('Expires', new Date(Date.now() + 10 * 1000).toUTCString());
+
+    // res.setHeader('Cache-Control', 'no-cache'); <===> res.setHeader('Cache-Control', 'max-age=0');
+    // res.setHeader('Cache-Control', 'no-store');
+    // no-cache: The browser will send a request to the server to check if the cache is expired, but the browser has cached the response.
+    // no-store: The browser will send a request to the server to check if the cache is expired, and the browser has not cached the response.
+
+    const stat = await fs.stat(file);
+    res.setHeader('Last-Modified', stat.mtime.toUTCString());
+    res.setHeader('Cache-Control', 'max-age=3600');
+    const ifModifiedSince = res.req?.headers['if-modified-since'];
+    if (ifModifiedSince && ifModifiedSince === stat.mtime.toUTCString()) {
+      res.statusCode = 304;
+      return res.end();
     }
   }
 }
