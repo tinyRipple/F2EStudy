@@ -1,7 +1,7 @@
 {
   "name": "htttp-server",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A TypeScript implement of http-server",
   "author": {
     "name": "tinywaves",
